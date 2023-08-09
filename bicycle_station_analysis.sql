@@ -7,7 +7,6 @@ WITH
         COUNT(DISTINCT rental_id)                   AS rental_count
       FROM
         `bigquery-public-data.london_bicycles.cycle_hire`
-      WHERE CAST (start_date AS DATE) >= '2022-01-01'
       GROUP BY
         1, 2
   )
