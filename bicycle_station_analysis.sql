@@ -23,14 +23,16 @@ WITH
         rental_counts
   )
 SELECT
-  rental_month       AS bicyle_rental_month,
-  start_station_name AS bicycle_rental_station,
-  rental_count       AS bicycle_rental_count,
-  station_rank       AS bicycle_rental_staion_rank
+  FORMAT_DATE('%b %Y', rental_month) AS bicycle_rental_date,
+  EXTRACT(YEAR FROM rental_month)    AS bicycle_rental_year,
+  EXTRACT(MONTH FROM rental_month)   AS bicycle_rental_month,
+  start_station_name                 AS bicycle_rental_station,
+  rental_count                       AS bicycle_rental_count,
+  station_rank                       AS bicycle_rental_staion_rank
 FROM
   rental_station_rank
 WHERE station_rank <= 5
 ORDER BY
-  bicyle_rental_month DESC,
-  bicycle_rental_staion_rank ASC
+  rental_month DESC,
+  station_rank ASC
 ;
