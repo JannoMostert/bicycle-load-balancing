@@ -1,11 +1,36 @@
+WITH
+  rental_counts AS
+    (
+      SELECT
+        CAST(DATE_TRUNC(start_date, month) AS DATE) AS rental_month,
+        start_station_name,
+        COUNT(DISTINCT rental_id)                   AS rental_count
+      FROM
+        `bigquery-public-data.london_bicycles.cycle_hire`
+      WHERE CAST (start_date AS DATE) >= '2022-01-01'
+      GROUP BY
+        1, 2
+  )
+  ,
+  rental_station_rank AS
+    (
+      SELECT
+        rental_month,
+        start_station_name,
+        rental_count,
+        RANK() OVER (PARTITION BY rental_month ORDER BY rental_count DESC) AS station_rank
+      FROM
+        rental_counts
+  )
 SELECT
-  CAST(DATE_TRUNC(start_date, month) AS DATE) AS rental_month,
-  start_station_name,
-  COUNT(DISTINCT rental_id)     AS rental_count
+  rental_month       AS bicyle_rental_month,
+  start_station_name AS bicycle_rental_station,
+  rental_count       AS bicycle_rental_count,
+  station_rank       AS bicycle_rental_staion_rank
 FROM
-  `bigquery-public-data.london_bicycles.cycle_hire` 
-WHERE CAST(start_date AS DATE) >= CAST('2022-01-01' AS DATE)
-GROUP BY
-  1, 2
-ORDER BY rental_month DESC
+  rental_station_rank
+WHERE station_rank <= 5
+ORDER BY
+  bicyle_rental_month DESC,
+  bicycle_rental_staion_rank ASC
 ;
